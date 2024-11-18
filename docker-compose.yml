@@ -1,0 +1,51 @@
+services:
+
+  db:
+    container_name: dival_db
+    image: 'mysql:8.2.0'
+    volumes:
+      - './application/db_data:/var/lib/mysql'
+      - './my.cnf:/etc/mysql/my.cnf'
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: app
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: laravel123
+    ports:
+      - '3307:3306'
+    networks:
+      - laravel
+
+  phpmyadmin:
+    container_name: dival_pma
+    image: phpmyadmin/phpmyadmin
+    restart: no
+    links:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+      UPLOAD_LIMIT: 2048M
+      MEMORY_LIMIT: 1024M
+    ports:
+      - '8081:80'
+    networks:
+      - laravel
+
+  webserver:
+    build:
+      context: ./phpdocker/apache
+    container_name: apache_webserver
+    working_dir: /application
+    volumes:
+      - './laravel:/application'
+      - './phpdocker/apache/apache.conf:/etc/apache2/sites-available/000-default.conf'
+    ports:
+      - '8000:80'
+    networks:
+      - laravel
+
+networks:
+  laravel:
+    driver: bridge
