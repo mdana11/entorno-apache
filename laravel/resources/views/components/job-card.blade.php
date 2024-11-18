@@ -18,4 +18,7 @@
         </div>
         <x-employer-logo :employer="$job->employer" :width="42" />
     </div>
+    @if (Auth::id() === $job->employer->user_id)
+        <a href="{{ route('jobs.edit', $job) }}" class="mt-4">Edit Job</a>
+    @endif
 </x-panel>
