@@ -49,4 +49,14 @@ class User extends Authenticatable
     {
         return $this->hasOne(Employer::class);
     }
+
+    public function environments()
+    {
+        return $this->belongsToMany(Environment::class, 'environment_users')->withPivot('role')->withTimestamps();
+    }
+
+    public function tasks()
+    {
+        return $this->belongsToMany(Task::class, 'tasks_users')->withPivot('role')->withTimestamps();
+    }
 }

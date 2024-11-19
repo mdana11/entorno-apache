@@ -20,7 +20,7 @@
             </div>
             <div class="space-x-6 font-bold">
                 <a href="/">Jobs</a>
-                <a href="/">Careers</a>
+                <a href="/">Tasks</a>
                 <a href="/">Salaries</a>
                 <a href="/">Companies</a>
             </div>
@@ -28,6 +28,8 @@
             @auth 
             <div class="space-x-6 font-bold flex">
                 <a href="/jobs/create">Post a Job</a>
+                <a href="{{ route('environments.create') }}">Create Environment</a>
+                <a href="{{ route('tasks.create') }}">Create Task</a>
 
                 <form method="POST" action="/logout">
                     @csrf

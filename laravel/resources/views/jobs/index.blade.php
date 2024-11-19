@@ -11,7 +11,6 @@
         </section>
 
         <section class="pt-10">
-            <h1 class="text-black">hola</h1>
             <x-section-headings>Featured Jobs</x-section-headings>
             <div class="grid lg:grid-cols-3 gap-8">
                 @foreach ($featuredJobs as $job)

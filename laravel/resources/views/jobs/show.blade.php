@@ -1,7 +1,7 @@
 <x-layout>
     <x-page-heading>{{ $job->title }}</x-page-heading>
 
-    <x-job-card-wide :$job />
+    <x-job-card-wide :$job :isOnThisPage="true" />
 
     @if (Auth::check() && !$job->applications()->where('user_id', Auth::id())->exists())
         <div class="mt-4">

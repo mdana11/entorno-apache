@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\EnvironmentController;
 use App\Http\Controllers\JobApplicationController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [JobController::class, 'index']);
@@ -31,3 +33,14 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::delete('/logout', [SessionController::class, 'destroy'])->middleware('auth');
+
+Route::resource('environments', EnvironmentController::class)->except(['destroy']); 
+Route::get('/environments', [EnvironmentController::class, 'index'])->name('environments.index');
+Route::get('/environments/{environment}', [EnvironmentController::class, 'show'])->name('environments.show');
+Route::post('environments/{environment}/add-users', [EnvironmentController::class, 'addUsersToEnvironment'])->name('environments.addUsers');
+
+Route::resource('tasks', TaskController::class)->except(['destroy']); 
+
+Route::post('tasks/{task}/add-users', [TaskController::class, 'addUsersToTask'])->name('tasks.addUsers');
+
+Route::get('/tasks', [TaskController::class, 'index'])->middleware('auth')->name('tasks.index');
