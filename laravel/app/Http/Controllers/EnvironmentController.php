@@ -35,11 +35,11 @@ class EnvironmentController extends Controller
     {
         abort_unless($environment->users->contains(Auth::id()), 403);
 
-        $users = User::all();
-
+        $users = $environment->users;
         $tasks = $environment->tasks()->with('users')->get();
+        $environments = Environment::all(); // Obtén todos los entornos
 
-        return view('environments.show', compact('environment', 'tasks', 'users'));
+        return view('environments.show', compact('environment', 'tasks', 'users', 'environments'));
     }
 
     public function addUsersToEnvironment(Request $request, Environment $environment)
@@ -69,5 +69,14 @@ class EnvironmentController extends Controller
         $environments = Environment::all();
 
         return view('environments.index', compact('environments'));
+    }
+
+    public function destroy(Environment $environment)
+    {
+        $environment->tasks()->delete();
+
+        $environment->delete();
+
+        return redirect()->route('environments.index')->with('success', 'Environment and its tasks deleted successfully.');
     }
 }

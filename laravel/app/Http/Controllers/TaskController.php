@@ -7,6 +7,7 @@ use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller
 {
@@ -17,8 +18,7 @@ class TaskController extends Controller
             return redirect()->route('login');
         }
     
-        $environments = Auth::user()->environments->with('tasks')->get();
-        dd($environments);
+        $environments = Auth::user()->environments()->with('tasks')->get();
     
         return view('tasks.index', compact('environments'));
     }
@@ -79,7 +79,52 @@ class TaskController extends Controller
     public function create()
     {
         $users = User::all();
-        $environments = Environment::all();
+        $environments = Auth::user()->environments;
+        if (request()->has('environment_id')) {
+            $environment = $environments->find(request()->get('environment_id'));
+            if ($environment) {
+                $users = $environment->users;
+            }
+        }
         return view('tasks.create', compact('users', 'environments'));
+    }
+
+    public function getUsersForEnvironment($environmentId)
+{
+    $environment = Environment::findOrFail($environmentId);
+    $users = DB::table('users')
+    ->join('environment_users', 'users.id', '=', 'environment_users.user_id')
+    ->where('environment_users.environment_id', $environmentId)
+    ->select('users.name', 'users.id')
+    ->get();
+
+    return response()->json($users);
+}
+
+    public function createInEnvironment(Environment $environment)
+    {
+        $tasks = $environment->tasks;
+        $users = $environment->users;
+
+        return view('environmet.show', compact('environment', 'task', 'users'));
+    }
+
+    public function updateStatus(Request $request, Task $task)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,in_progress,completed',
+        ]);
+
+        $task->status = $request->input('status');
+        $task->save();
+
+        return redirect()->back()->with('success', 'Task status updated!');
+    }
+
+    public function destroy(Task $task)
+    {
+        $task->delete();
+
+        return redirect()->route('tasks.index')->with('success', 'Task deleted successfully.');
     }
 }

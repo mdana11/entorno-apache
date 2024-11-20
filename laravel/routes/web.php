@@ -39,8 +39,18 @@ Route::get('/environments', [EnvironmentController::class, 'index'])->name('envi
 Route::get('/environments/{environment}', [EnvironmentController::class, 'show'])->name('environments.show');
 Route::post('environments/{environment}/add-users', [EnvironmentController::class, 'addUsersToEnvironment'])->name('environments.addUsers');
 
-Route::resource('tasks', TaskController::class)->except(['destroy']); 
-
 Route::post('tasks/{task}/add-users', [TaskController::class, 'addUsersToTask'])->name('tasks.addUsers');
+Route::patch('/tasks/{task}/update-status', [TaskController::class, 'updateStatus'])->name('tasks.updateStatus');
 
-Route::get('/tasks', [TaskController::class, 'index'])->middleware('auth')->name('tasks.index');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+    Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
+    Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
+});
+
+Route::get('environments/{environment}/users', [TaskController::class, 'getUsersForEnvironment']);
+
+Route::get('/environments/{environment}/create-task', [TaskController::class, 'createInEnvironment'])->name('tasks.createInEnvironment');
+
+Route::delete('environments/{environment}', [EnvironmentController::class, 'destroy'])->name('environments.destroy');
+Route::delete('tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
