@@ -12,9 +12,6 @@ use Illuminate\Validation\Rule;
 
 class JobController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $jobs = Job::latest()->with(['employer', 'tags'])->get()->groupBy('featured');
@@ -25,17 +22,11 @@ class JobController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('jobs.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $attributes = $request->validate([
@@ -67,17 +58,11 @@ class JobController extends Controller
 
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Job $job)
     {
         return view('jobs.show', compact('job'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Job $job)
     {
         if (Auth::id() !== $job->employer->user_id) {
@@ -87,9 +72,6 @@ class JobController extends Controller
         return view('jobs.edit', compact('job'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateJobRequest $request, Job $job)
     {
     
@@ -115,13 +97,5 @@ class JobController extends Controller
         }
     
         return redirect('/')->with('success', 'Job updated successfully.');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Job $job)
-    {
-        //
     }
 }

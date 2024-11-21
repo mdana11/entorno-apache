@@ -50,6 +50,13 @@
                                     Delete Task
                                 </button>
                             </form>
+                            
+                            <form method="GET" action="{{ route('tasks.edit', $task->id) }}" class="mt-2">
+                                @csrf
+                                <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">
+                                    Edit Task
+                                </button>
+                            </form>
                         </li>
                     @endforeach
                 </ul>

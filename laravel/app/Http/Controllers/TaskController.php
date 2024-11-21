@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Environment;
 use App\Models\Task;
 use App\Models\User;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller
 {
+    use AuthorizesRequests;
 
     public function index()
     {
@@ -90,16 +92,16 @@ class TaskController extends Controller
     }
 
     public function getUsersForEnvironment($environmentId)
-{
-    $environment = Environment::findOrFail($environmentId);
-    $users = DB::table('users')
-    ->join('environment_users', 'users.id', '=', 'environment_users.user_id')
-    ->where('environment_users.environment_id', $environmentId)
-    ->select('users.name', 'users.id')
-    ->get();
+    {
+        $environment = Environment::findOrFail($environmentId);
+        $users = DB::table('users')
+        ->join('environment_users', 'users.id', '=', 'environment_users.user_id')
+        ->where('environment_users.environment_id', $environmentId)
+        ->select('users.name', 'users.id')
+        ->get();
 
-    return response()->json($users);
-}
+        return response()->json($users);
+    }
 
     public function createInEnvironment(Environment $environment)
     {
@@ -126,5 +128,40 @@ class TaskController extends Controller
         $task->delete();
 
         return redirect()->route('tasks.index')->with('success', 'Task deleted successfully.');
+    }
+
+    public function edit(Task $task)
+    {
+        $this->authorize('update', $task);
+
+        $users = $task->environment->users; 
+        $environment = $task->environment;
+
+        return view('tasks.edit', compact('task', 'users', 'environment'));
+    }
+
+    public function update(Request $request, Task $task)
+    {
+        $this->authorize('update', $task); 
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'start_time' => 'required|date',
+            'end_time' => 'required|date|after:start_time',
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'exists:users,id', 
+        ]);
+
+        $task->update([
+            'name' => $validated['name'],
+            'description' => $validated['description'],
+            'start_time' => $validated['start_time'],
+            'end_time' => $validated['end_time'],
+        ]);
+
+        $task->users()->sync($validated['user_ids']);
+
+        return redirect()->route('tasks.index')->with('success', 'Task updated successfully.');
     }
 }
