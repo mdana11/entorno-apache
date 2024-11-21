@@ -56,17 +56,23 @@ class RegisteredUserController extends Controller
         return redirect('/');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function showEnvironments($userId)
     {
-        //
+        $user = User::find($userId);
+
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no encontrado'], 404);
+        }
+
+        $environments = $user->environments()
+                             ->distinct() 
+                             ->where('is_active', 1)
+                             ->get();
+ 
+
+        return view('user.environments', compact('environments'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         //

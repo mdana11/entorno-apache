@@ -54,3 +54,5 @@ Route::get('/environments/{environment}/create-task', [TaskController::class, 'c
 
 Route::delete('environments/{environment}', [EnvironmentController::class, 'destroy'])->name('environments.destroy');
 Route::delete('tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
+
+Route::get('/user/{userId}/environments', [RegisteredUserController::class, 'showEnvironments']);

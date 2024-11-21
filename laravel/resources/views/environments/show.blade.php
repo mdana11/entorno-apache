@@ -8,7 +8,7 @@
             <div class="bg-gray-700 p-6 rounded-lg shadow-lg">
                 <h2 class="text-xl font-semibold text-white mb-4">Users in this environment</h2>
                 <ul class="space-y-2">
-                    @foreach($environment->users as $user)
+                    @foreach($usersInEnvironment as $user)
                         <li class="flex items-center space-x-2 text-gray-300">
                             <span class="font-medium">{{ $user->name }}</span>
                             <span class="text-sm text-gray-400">({{ $user->pivot->role }})</span>
@@ -63,7 +63,7 @@
                         <x-forms.input label="Start Date" name="start_time" type="date" />
                         <x-forms.input label="Deadline" name="end_time" type="date" />
                         <x-forms.select label="Assign Users" name="user_ids[]" multiple>
-                            @foreach($users as $user)
+                            @foreach($usersInEnvironment as $user)
                                 <option value="{{ $user->id }}">{{ $user->name }}</option>
                             @endforeach
                         </x-forms.select>
@@ -85,17 +85,30 @@
         <h3 class="text-xl font-semibold text-white mb-4">Add Users to this Environment</h3>
         <form action="{{ route('environments.addUsers', $environment) }}" method="POST">
             @csrf
-            <div class="space-y-4">
-                <label for="user_ids" class="block text-lg text-gray-300">Select Users:</label>
-                <select name="user_ids[]" multiple class="w-full p-3 border text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
-                    @foreach($users as $user)
-                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+        
+            <div>
+                <label for="user_ids" class="block text-lg text-gray-300 mb-2">Select Users:</label>
+                
+                <div style="max-height: 10rem; overflow-y: auto; background-color: #2d3748; padding: 1rem; border: 1px solid #4a5568; border-radius: 0.5rem;">
+                    @foreach($usersNotInEnvironment as $user)
+                        <div class="flex items-center mb-2">
+                            <input 
+                                type="checkbox" 
+                                id="user_{{ $user->id }}" 
+                                name="user_ids[]" 
+                                value="{{ $user->id }}" 
+                                class="mr-2 text-blue-600 focus:ring focus:ring-blue-500 rounded">
+                            <label for="user_{{ $user->id }}" class="text-gray-300">{{ $user->name }}</label>
+                        </div>
                     @endforeach
-                </select>
-                <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">Add Users</button>
+                </div>
             </div>
+        
+            <button type="submit" class="mt-4 w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">
+                Add Users
+            </button>
         </form>
-    </div>
+    </div>                
 
     <script>
         document.getElementById('addTaskButton').addEventListener('click', function() {

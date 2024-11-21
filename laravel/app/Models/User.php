@@ -52,7 +52,10 @@ class User extends Authenticatable
 
     public function environments()
     {
-        return $this->belongsToMany(Environment::class, 'environment_users')->withPivot('role')->withTimestamps();
+        return $this->belongsToMany(Environment::class, 'environment_users')
+                ->withPivot('role')
+                ->withTimestamps()
+                ->where('is_active', 1);
     }
 
     public function tasks()

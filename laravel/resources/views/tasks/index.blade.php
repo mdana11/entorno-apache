@@ -20,7 +20,6 @@
                                 </h3>
                                 <p class="text-sm text-gray-300">{{ $task->description }}</p>
                     
-                                <!-- Formulario para cambiar el estado de la tarea -->
                                 <form method="POST" action="{{ route('tasks.updateStatus', $task->id) }}" class="mt-2" id="status-form-{{ $task->id }}">
                                     @csrf
                                     @method('PATCH')
@@ -31,7 +30,7 @@
                                     </select>
                                 </form>
                     
-                                <!-- Formulario para eliminar tarea -->
+                                
                                 <form method="POST" action="{{ route('tasks.destroy', $task->id) }}" class="mt-2">
                                     @csrf
                                     @method('DELETE')
